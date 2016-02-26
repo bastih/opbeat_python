@@ -60,7 +60,9 @@ class Psycopg2ISQLQuotePreparWrapper(DbApi2Instrumentation):
     name = 'psycopg2-isqlquote-prepare'
 
     instrument_list = [
-        ("psycopg2.extensions", "ISQLQuote.prepare")
+        ("psycopg2.extensions", "Binary.prepare"),
+        ("psycopg2.extensions", "QuotedString.prepare"),
+        ("psycopg2.extensions", "AsIs.prepare"),
     ]
 
     def call(self, module, method, wrapped, instance, args, kwargs):
