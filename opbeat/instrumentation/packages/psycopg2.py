@@ -54,3 +54,16 @@ class Psycopg2RegisterTypeInstrumentation(DbApi2Instrumentation):
                 args = (args[0], args[1].__wrapped__)
 
         return wrapped(*args, **kwargs)
+
+
+class Psycopg2ISQLQuotePreparWrapper(DbApi2Instrumentation):
+    name = 'psycopg2-isqlquote-prepare'
+
+    instrument_list = [
+        ("psycopg2.extensions", "ISQLQuote.prepare")
+    ]
+
+    def call(self, module, method, wrapped, instance, args, kwargs):
+        if len(args) == 2 and hasattr(args[1], "__wrapped__"):
+                args = (args[0], args[1].__wrapped__)
+        return wrapped(*args, **kwargs)
