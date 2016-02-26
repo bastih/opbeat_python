@@ -4,6 +4,7 @@ _cls_register = set([
     'opbeat.instrumentation.packages.jinja2.Jinja2Instrumentation',
     'opbeat.instrumentation.packages.psycopg2.Psycopg2Instrumentation',
     'opbeat.instrumentation.packages.psycopg2.Psycopg2RegisterTypeInstrumentation',
+    'opbeat.instrumentation.packages.psycopg2.Psycopg2AdaptInstrumentation',
     'opbeat.instrumentation.packages.mysql.MySQLInstrumentation',
     'opbeat.instrumentation.packages.pylibmc.PyLibMcInstrumentation',
     'opbeat.instrumentation.packages.python_memcached.PythonMemcachedInstrumentation',

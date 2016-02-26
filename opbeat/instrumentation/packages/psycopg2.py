@@ -3,7 +3,7 @@ from opbeat.instrumentation.packages.dbapi2 import (ConnectionProxy,
                                                     DbApi2Instrumentation,
                                                     extract_signature)
 from opbeat.traces import trace
-from opbeat.utils import default_ports
+from opbeat.utils import default_ports, wrapt
 
 
 class PGCursorProxy(CursorProxy):
@@ -37,7 +37,7 @@ class Psycopg2Instrumentation(DbApi2Instrumentation):
         else:
             # Parse connection string and extract host/port
             pass
-
+        print("I happen")
         with trace(signature, "db.postgreql.connect"):
             return PGConnectionProxy(wrapped(*args, **kwargs))
 
@@ -46,7 +46,7 @@ class Psycopg2RegisterTypeInstrumentation(DbApi2Instrumentation):
     name = 'psycopg2-register-type'
 
     instrument_list = [
-        ("psycopg2.extensions", "register_type")
+        ("psycopg2.extensions", "register_type"),
     ]
 
     def call(self, module, method, wrapped, instance, args, kwargs):
@@ -55,17 +55,15 @@ class Psycopg2RegisterTypeInstrumentation(DbApi2Instrumentation):
 
         return wrapped(*args, **kwargs)
 
+class Adapted(wrapt.ObjectProxy):
+    def prepare(self, connection):
+        return self.__wrapped__.prepare(connection.__wrapped__)
 
-class Psycopg2ISQLQuotePreparWrapper(DbApi2Instrumentation):
-    name = 'psycopg2-isqlquote-prepare'
 
+class Psycopg2AdaptInstrumentation(DbApi2Instrumentation):
+    name = 'psycopg2-adapt'
     instrument_list = [
-        ("psycopg2.extensions", "Binary.prepare"),
-        ("psycopg2.extensions", "QuotedString.prepare"),
-        ("psycopg2.extensions", "AsIs.prepare"),
+        ("psycopg2.extensions", "adapt")
     ]
-
     def call(self, module, method, wrapped, instance, args, kwargs):
-        if len(args) == 2 and hasattr(args[1], "__wrapped__"):
-                args = (args[0], args[1].__wrapped__)
-        return wrapped(*args, **kwargs)
+        return Adapted(wrapped(*args, **kwargs))
