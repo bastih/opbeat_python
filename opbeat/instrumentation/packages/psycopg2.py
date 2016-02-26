@@ -37,7 +37,7 @@ class Psycopg2Instrumentation(DbApi2Instrumentation):
         else:
             # Parse connection string and extract host/port
             pass
-        print("I happen")
+
         with trace(signature, "db.postgreql.connect"):
             return PGConnectionProxy(wrapped(*args, **kwargs))
 
